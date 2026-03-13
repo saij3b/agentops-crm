@@ -45,7 +45,8 @@ export type ActivityType =
   | 'branch_created'
   | 'pr_opened'
   | 'issue_blocked'
-  | 'issue_completed';
+  | 'issue_completed'
+  | 'lane_action';
 
 export interface ActivityEvent {
   id: string;
@@ -58,7 +59,7 @@ export interface ActivityEvent {
   target: {
     id: string;
     title: string;
-    type: 'issue' | 'pull_request';
+    type: 'issue' | 'pull_request' | 'agent_lane';
   };
   metadata?: {
     branchName?: string;
