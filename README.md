@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AgentOps CRM
 
-## Getting Started
+Unified dashboard and CRM for managing autonomous agent runs, projects, and client relationships.
 
-First, run the development server:
+## 🚀 Phase 1: MVP (Active)
+This phase establishes the core UI foundation and data structures for the AgentOps platform.
 
+### Core Features
+- **Project Dashboard**: Multi-widget view for active runs, stats, and activity.
+- **Client & Project CRM**: Management of repositories, milestones, and agent lanes.
+- **Operation Monitor**: Real-time status of agent turns and failure tracking.
+- **Approval Center**: Human-in-the-loop gates for sensitive tasks.
+- **Activity Timeline**: Unified event log for system transparency.
+
+## 🛠️ Tech Stack
+- **Framework**: Next.js 15 (Stable)
+- **Styling**: Tailwind CSS 4
+- **Language**: TypeScript
+- **State**: Mocked (Client-side only for Phase 1)
+
+## 📦 Getting Started
+
+### Prerequisites
+- **Node.js**: 22.x or higher
+- **npm**: 10.x or higher
+
+### Installation
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Clone the repository
+git clone https://github.com/saij3b/agentops-crm.git
+
+# Install dependencies
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Development
+```bash
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🏗️ Architecture
+- `/src/app`: App Router pages and layouts.
+- `/src/components`: Modular, typed UI components using Tailwind.
+- `/src/lib`: Consolidated type definitions and seed data.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🔮 Phase 2 Roadmap
+- [ ] Real-time WebSocket integration for agent runs.
+- [ ] GitHub API integration for linked PRs.
+- [ ] Persistent PostgreSQL backend.
+- [ ] Multi-agent orchestration controls.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Created by the autonomous builder loop.*
