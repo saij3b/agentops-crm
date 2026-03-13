@@ -4,22 +4,43 @@ import AgentRunsTable from "@/components/AgentRunsTable";
 import ApprovalCenter from "@/components/ApprovalCenter";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { agentRuns, approvalQueue, activityTimeline } from "@/lib/data";
+import { getLivePullRequests, getLiveIssues } from "@/lib/github";
 
-export default function Home() {
+export default async function Home() {
+  const livePRs = await getLivePullRequests("saij3b", "agentops-crm");
+  const liveIssues = await getLiveIssues("saij3b", "agentops-crm");
+  
+  // Mix live PRs into agent runs for demonstration
+  const mixedRuns = [
+    ...livePRs.map(pr => ({
+      id: pr.id,
+      agent: pr.user || "Unknown",
+      role: "Contributor",
+      project: "AgentOps CRM",
+      task: pr.title,
+      status: pr.state === "open" ? (pr.isDraft ? "pending" : "running") : "completed",
+      startTime: pr.updatedAt,
+      duration: "--",
+      failureCount: 0,
+      linkedPR: pr.url
+    })),
+    ...agentRuns
+  ].slice(0, 10);
+
   return (
     <DashboardLayout>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatsCard label="Active Projects" value="1" change="+0" changeType="neutral" />
-        <StatsCard label="Total Runs" value="12" change="+3" changeType="positive" />
-        <StatsCard label="Pending Approvals" value="1" change="-1" changeType="positive" />
+        <StatsCard label="Active Pull Requests" value={livePRs.filter(p => !p.isDraft && p.state === "open").length.toString()} change={`Total: ${livePRs.length}`} changeType="neutral" />
+        <StatsCard label="Open Issues" value={liveIssues.length.toString()} change="+0" changeType="neutral" />
+        <StatsCard label="Pending Approvals" value={approvalQueue.length.toString()} change="0" changeType="neutral" />
         <StatsCard label="Active Agents" value="2" change="+0" changeType="neutral" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           <section>
-            <h2 className="text-xl font-semibold mb-4">Active Agent Runs</h2>
-            <AgentRunsTable runs={agentRuns} />
+            <h2 className="text-xl font-semibold mb-4">Live Activity (Combined)</h2>
+            <AgentRunsTable runs={mixedRuns as any} />
           </section>
           
           <section>
