@@ -8,12 +8,18 @@ Unified dashboard for monitoring autonomous agents and issue lifecycles.
 - **Comprehensive Seed Data**: Realistic multi-entity mock data for all Phase 1 views.
 - **Agent Monitoring**: Track agent status and workload.
 - **Issue Tracking**: Manage and monitor the status of various tasks.
+- **Status**: Currently, all data is **mocked** via `src/lib/data.ts` to demonstrate Phase 1 UI/UX.
+
+## Prerequisites
+
+- **Node.js**: v18.0.0 or higher (Tested on v22.12.0)
+- **npm**: v9.0.0 or higher
 
 ## Setup Instructions
 
 1.  **Clone the repository**:
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/saij3b/agentops-crm
     cd agentops-crm
     ```
 
@@ -29,6 +35,13 @@ Unified dashboard for monitoring autonomous agents and issue lifecycles.
 
 4.  **Access the dashboard**:
     Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Available Scripts
+
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the application for production.
+- `npm run start`: Starts the production server.
+- `npm run lint`: Runs ESLint to check for code quality issues.
 
 ## Phase 2 Roadmap
 
