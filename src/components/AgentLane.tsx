@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Play, Pause, Square, Radio, AlertCircle } from "lucide-react";
+import { Play, Pause, Square } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import { cn } from "@/lib/utils";
 
@@ -55,7 +55,7 @@ export const AgentLane: React.FC<AgentLaneProps> = ({
                   "h-full rounded-full transition-all duration-500",
                   health > 80 ? "bg-green-500" : health > 50 ? "bg-yellow-500" : "bg-red-500"
                 )}
-                style={{ width: `${health}%` }}
+                style={{ width: `${Math.min(100, Math.max(0, health))}%` }}
               />
             </div>
             <span className="text-xs font-medium">{health}%</span>
@@ -72,6 +72,7 @@ export const AgentLane: React.FC<AgentLaneProps> = ({
           <button 
             onClick={() => onAction("start")}
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors"
+            aria-label={`Start ${name} lane`}
           >
             <Play className="w-3.5 h-3.5" /> Start
           </button>
@@ -79,6 +80,7 @@ export const AgentLane: React.FC<AgentLaneProps> = ({
           <button 
             onClick={() => onAction("resume")}
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-medium transition-colors"
+            aria-label={`Resume ${name} lane`}
           >
             <Play className="w-3.5 h-3.5" /> Resume
           </button>
@@ -86,6 +88,7 @@ export const AgentLane: React.FC<AgentLaneProps> = ({
           <button 
             onClick={() => onAction("pause")}
             className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm font-medium transition-colors"
+            aria-label={`Pause ${name} lane`}
           >
             <Pause className="w-3.5 h-3.5" /> Pause
           </button>
@@ -95,6 +98,7 @@ export const AgentLane: React.FC<AgentLaneProps> = ({
           disabled={status === "idle"}
           onClick={() => onAction("stop")}
           className="px-3 py-2 border border-slate-200 dark:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 text-slate-600 dark:text-zinc-400 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          aria-label={`Stop ${name} lane`}
         >
           <Square className="w-3.5 h-3.5" />
         </button>

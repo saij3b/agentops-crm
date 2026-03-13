@@ -5,6 +5,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { AgentLane, LaneStatus } from "@/components/AgentLane";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { activityTimeline as initialActivity } from "@/lib/data";
+import { ActivityEvent } from "@/lib/types";
 
 interface LaneData {
   id: string;
@@ -23,7 +24,7 @@ export default function OrchestrationPage() {
     { id: "lane-4", name: "Intake", role: "Listener", status: "active", lastActivity: "Waiting for events", health: 100 },
   ]);
 
-  const [activities, setActivities] = useState(initialActivity);
+  const [activities, setActivities] = useState<ActivityEvent[]>(initialActivity as ActivityEvent[]);
 
   const handleAction = (laneId: string, action: string) => {
     // 1. Update lane status
@@ -40,23 +41,26 @@ export default function OrchestrationPage() {
 
     // 2. Log activity
     const lane = lanes.find(L => L.id === laneId);
-    const newActivity: any = {
-      id: `evt-${Date.now()}`,
-      type: "issue_created", // Use existing type for compatibility
+    if (!lane) return;
+
+    const newActivity: ActivityEvent = {
+      id: crypto.randomUUID ? crypto.randomUUID() : `evt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      type: "lane_action",
       timestamp: new Date().toISOString(),
       actor: { name: "Admin" },
-      target: { id: laneId, title: `${lane?.name} Lane: ${action}`, type: "event" }
+      target: { id: laneId, title: `${lane.name} Lane: ${action}`, type: "agent_lane" }
     };
     setActivities(prev => [newActivity, ...prev]);
-    
-    console.log(`[orchestration] Action ${action} triggered for ${lane?.name}`);
   };
 
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-8">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Multi-Agent Orchestration</h1>
+          <div className="flex items-center gap-2 mb-2">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Multi-Agent Orchestration</h1>
+            <span className="px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] font-bold uppercase rounded-md tracking-widest">Mock Mode</span>
+          </div>
           <p className="text-slate-500 dark:text-zinc-400">Monitor and manage autonomous agent lanes.</p>
         </div>
 
@@ -75,7 +79,7 @@ export default function OrchestrationPage() {
             <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-xl p-6 shadow-sm">
               <h2 className="text-lg font-bold text-slate-800 dark:text-white mb-4">Orchestration Logs</h2>
               <div className="space-y-3">
-                {activities.slice(0, 8).map(a => (
+                {activities.filter(a => a.type === "lane_action").slice(0, 8).map(a => (
                    <div key={a.id} className="flex items-center justify-between py-2 border-b border-slate-50 dark:border-zinc-800 last:border-0">
                      <div className="flex items-center gap-3">
                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
@@ -88,6 +92,9 @@ export default function OrchestrationPage() {
                      </span>
                    </div>
                 ))}
+                {activities.filter(a => a.type === "lane_action").length === 0 && (
+                  <p className="text-sm text-slate-400 italic">No orchestration events captured yet.</p>
+                )}
               </div>
             </div>
           </div>
