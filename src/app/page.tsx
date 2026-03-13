@@ -7,10 +7,10 @@ import { agentRuns, approvalQueue, activityTimeline } from "@/lib/data";
 import { getLivePullRequests, getLiveIssues } from "@/lib/github";
 
 export default async function Home() {
-  const livePRs = await getLivePullRequests("saij3b", "agentops-crm");
-  const liveIssues = await getLiveIssues("saij3b", "agentops-crm");
+  const repo = "saij3b/agentops-crm";
+  const livePRs = await getLivePullRequests(repo);
+  const liveIssues = await getLiveIssues(repo);
   
-  // Mix live PRs into agent runs for demonstration
   const mixedRuns = [
     ...livePRs.map(pr => ({
       id: pr.id,
