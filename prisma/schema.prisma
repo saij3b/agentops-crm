@@ -49,4 +49,5 @@ model ActivityEvent {
   targetId  String
   targetTitle String
   targetType  String
+  metadata    String?
 }

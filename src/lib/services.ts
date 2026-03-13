@@ -10,6 +10,18 @@ function toActivityType(value: string): ActivityType {
   return value as ActivityType;
 }
 
+function parseMetadata(metadata: string | null | undefined): ActivityEvent["metadata"] {
+  if (!metadata) {
+    return undefined;
+  }
+
+  try {
+    return JSON.parse(metadata) as ActivityEvent["metadata"];
+  } catch {
+    return { reason: metadata };
+  }
+}
+
 export async function getAgentRuns(): Promise<AgentRun[]> {
   try {
     const runs = await prisma.agentRun.findMany({
@@ -51,6 +63,7 @@ export async function getActivityTimeline(): Promise<ActivityEvent[]> {
         title: event.targetTitle,
         type: event.targetType as ActivityEvent["target"]["type"],
       },
+      metadata: parseMetadata(event.metadata),
     }));
   } catch (error) {
     console.error("DB fetch error (Timeline), falling back to mock:", error);
