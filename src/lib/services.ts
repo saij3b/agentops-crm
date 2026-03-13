@@ -16,7 +16,10 @@ function parseMetadata(metadata: string | null | undefined): ActivityEvent["meta
   }
 
   try {
-    return JSON.parse(metadata) as ActivityEvent["metadata"];
+    const parsed = JSON.parse(metadata);
+    return typeof parsed === "object" && parsed !== null
+      ? (parsed as ActivityEvent["metadata"])
+      : { reason: String(parsed) };
   } catch {
     return { reason: metadata };
   }
@@ -27,15 +30,21 @@ export async function getAgentRuns(): Promise<AgentRun[]> {
     const runs = await prisma.agentRun.findMany({
       orderBy: { startTime: "desc" },
     });
-
     if (runs.length === 0) {
       return mockData.agentRuns;
     }
 
     return runs.map((run) => ({
-      ...run,
-      startTime: run.startTime.toISOString(),
+      id: run.id,
+      agent: run.agent,
+      role: run.role,
+      project: run.project,
+      task: run.task,
       status: toStatus(run.status),
+      startTime: run.startTime.toISOString(),
+      duration: run.duration,
+      failureCount: run.failureCount,
+      linkedPR: run.linkedPR || undefined,
     }));
   } catch (error) {
     console.error("DB fetch error (AgentRuns), falling back to mock:", error);
@@ -48,7 +57,6 @@ export async function getActivityTimeline(): Promise<ActivityEvent[]> {
     const events = await prisma.activityEvent.findMany({
       orderBy: { timestamp: "desc" },
     });
-
     if (events.length === 0) {
       return mockData.activityTimeline;
     }
@@ -79,7 +87,9 @@ export async function getClients(): Promise<Client[]> {
     }
 
     return clients.map((client) => ({
-      ...client,
+      id: client.id,
+      name: client.name,
+      company: client.company,
       status: client.status as Client["status"],
       priority: client.priority as Client["priority"],
     }));
@@ -96,8 +106,13 @@ export async function getProjects(): Promise<Project[]> {
     }
 
     return projects.map((project) => ({
-      ...project,
+      id: project.id,
+      name: project.name,
+      clientId: project.clientId,
+      repo: project.repo,
       status: project.status as Project["status"],
+      milestone: project.milestone,
+      agentLane: project.agentLane,
       blockers: [],
     }));
   } catch {

@@ -11,8 +11,8 @@ model Client {
   id        String    @id
   name      String
   company   String
-  status    String    // 'active' | 'inactive' | 'lead'
-  priority  String    // 'low' | 'medium' | 'high'
+  status    String
+  priority  String
   projects  Project[]
 }
 
@@ -22,7 +22,7 @@ model Project {
   clientId  String
   client    Client    @relation(fields: [clientId], references: [id])
   repo      String
-  status    String    // 'planning' | 'in-progress' | 'completed' | 'on-hold'
+  status    String
   milestone String
   agentLane String
   createdAt DateTime  @default(now())
@@ -49,5 +49,7 @@ model ActivityEvent {
   targetId  String
   targetTitle String
   targetType  String
-  metadata    String?
+  @@index([timestamp])
+  @@index([type])
+  metadata    String?  // SQLite fallback to string for Json.
 }
