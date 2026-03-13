@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { isDatabaseConfigured, prisma } from '@/lib/prisma';
 import crypto from 'crypto';
 
 export async function POST(req: NextRequest) {
   try {
+    if (!isDatabaseConfigured) {
+      return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+    }
+
     const apiSecret = process.env.CRM_API_KEY;
     
     // Guard: Error if API key is not configured in environment
@@ -64,8 +68,9 @@ export async function POST(req: NextRequest) {
       timestamp: event.timestamp 
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[API Ingest Error]:', error);
-    return NextResponse.json({ error: 'Malformed request or internal error' }, { status: error.name === 'SyntaxError' ? 400 : 500 });
+    const status = error instanceof SyntaxError ? 400 : 500;
+    return NextResponse.json({ error: 'Malformed request or internal error' }, { status });
   }
 }

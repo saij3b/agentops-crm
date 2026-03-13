@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { isDatabaseConfigured, prisma } from "./prisma";
 import * as mockData from "./data";
 import type { ActivityEvent, ActivityType, AgentRun, Client, Project, Status } from "./types";
 
@@ -26,6 +26,10 @@ function parseMetadata(metadata: string | null | undefined): ActivityEvent["meta
 }
 
 export async function getAgentRuns(): Promise<AgentRun[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.agentRuns;
+  }
+
   try {
     const runs = await prisma.agentRun.findMany({
       orderBy: { startTime: "desc" },
@@ -53,6 +57,10 @@ export async function getAgentRuns(): Promise<AgentRun[]> {
 }
 
 export async function getActivityTimeline(): Promise<ActivityEvent[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.activityTimeline;
+  }
+
   try {
     const events = await prisma.activityEvent.findMany({
       orderBy: { timestamp: "desc" },
@@ -80,6 +88,10 @@ export async function getActivityTimeline(): Promise<ActivityEvent[]> {
 }
 
 export async function getClients(): Promise<Client[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.clients;
+  }
+
   try {
     const clients = await prisma.client.findMany();
     if (clients.length === 0) {
@@ -99,6 +111,10 @@ export async function getClients(): Promise<Client[]> {
 }
 
 export async function getProjects(): Promise<Project[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.projects;
+  }
+
   try {
     const projects = await prisma.project.findMany();
     if (projects.length === 0) {
