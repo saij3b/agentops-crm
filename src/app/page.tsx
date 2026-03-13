@@ -16,6 +16,7 @@ export default async function Home() {
     getLiveIssues(repo),
   ]);
 
+  const hasLive = livePRs.length > 0 || liveIssues.length > 0;
   const mixedRuns = [
     ...livePRs.map((pr) => ({
       id: pr.id,
@@ -47,26 +48,36 @@ export default async function Home() {
           value={livePRs.filter((pr) => !pr.isDraft && pr.state === "open").length.toString()}
           change={`Total: ${livePRs.length}`}
           changeType="neutral"
+          source={hasLive ? "live" : "mock"}
         />
         <StatsCard
           label="Open Issues"
           value={liveIssues.length.toString()}
           change="Live"
           changeType="neutral"
+          source={hasLive ? "live" : "mock"}
         />
         <StatsCard
           label="Pending Approvals"
           value={approvalQueue.length.toString()}
           change="0"
           changeType="neutral"
+          source="mock"
         />
-        <StatsCard label="Active Agents" value="2" change="+0" changeType="neutral" />
+        <StatsCard label="Active Agents" value="2" change="+0" changeType="neutral" source="mock" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
           <section>
-            <h2 className="text-xl font-semibold mb-4">Live Activity</h2>
+            <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              Run Monitor
+              {hasLive && (
+                <span className="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full dark:bg-green-900/30 dark:text-green-400 font-bold uppercase tracking-widest">
+                  Live Enabled
+                </span>
+              )}
+            </h2>
             <AgentRunsTable runs={mixedRuns} />
           </section>
 
