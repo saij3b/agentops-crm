@@ -8,11 +8,12 @@ import { getLiveIssues, getLivePullRequests } from "@/lib/github";
 import { getAgentRuns, getActivityTimeline } from "@/lib/services";
 
 export default async function Home() {
+  const repo = "saij3b/agentops-crm";
   const [runs, timeline, livePRs, liveIssues] = await Promise.all([
     getAgentRuns(),
     getActivityTimeline(),
-    getLivePullRequests("saij3b", "agentops-crm"),
-    getLiveIssues("saij3b", "agentops-crm"),
+    getLivePullRequests(repo),
+    getLiveIssues(repo),
   ]);
 
   const mixedRuns = [

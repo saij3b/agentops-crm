@@ -4,11 +4,19 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
-export async function getLivePullRequests(owner: string, repo: string) {
+function parseRepo(repo: string) {
+  // Handles "owner/repo" or "https://github.com/owner/repo"
+  const clean = repo.replace("https://github.com/", "").replace(".git", "");
+  const [owner, name] = clean.split("/");
+  return { owner, name };
+}
+
+export async function getLivePullRequests(repoString: string) {
   try {
+    const { owner, name } = parseRepo(repoString);
     const { data: pulls } = await octokit.rest.pulls.list({
       owner,
-      repo,
+      repo: name,
       state: "all",
       sort: "updated",
       direction: "desc",
@@ -31,11 +39,12 @@ export async function getLivePullRequests(owner: string, repo: string) {
   }
 }
 
-export async function getLiveIssues(owner: string, repo: string) {
+export async function getLiveIssues(repoString: string) {
   try {
+    const { owner, name } = parseRepo(repoString);
     const { data: issues } = await octokit.rest.issues.listForRepo({
       owner,
-      repo,
+      repo: name,
       state: "open",
       sort: "updated",
       direction: "desc",
