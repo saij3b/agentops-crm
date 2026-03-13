@@ -1,4 +1,4 @@
-import { Client, Project, AgentRun, ApprovalItem, ActivityEvent, Agent } from './types';
+import { Client, Project, AgentRun, ApprovalItem, ActivityEvent, Agent, SessionUser } from './types';
 
 export const clients: Client[] = [
   { id: 'c1', name: 'Alice Smith', company: 'TechCorp', status: 'active', priority: 'high' },
@@ -81,4 +81,28 @@ export const navItems = [
   { name: 'Clients', href: '/clients', icon: 'Users' },
   { name: 'Projects', href: '/projects', icon: 'FolderKanban' },
   { name: 'Orchestration', href: '/orchestration', icon: 'Radio' },
+];
+
+export const appUsers: SessionUser[] = [
+  {
+    id: 'u-admin',
+    name: 'Ops Admin',
+    title: 'Workspace Owner',
+    role: 'admin',
+    description: 'Full access to dashboards, approvals, and future admin-only controls.',
+  },
+  {
+    id: 'u-reviewer',
+    name: 'Codex Reviewer',
+    title: 'Staff Reviewer',
+    role: 'reviewer',
+    description: 'Can inspect the CRM and process approval tasks without admin-only ownership.',
+  },
+  {
+    id: 'u-viewer',
+    name: 'Stakeholder Viewer',
+    title: 'Read-only Observer',
+    role: 'viewer',
+    description: 'Can browse the CRM safely, but cannot approve or reject sensitive actions.',
+  },
 ];

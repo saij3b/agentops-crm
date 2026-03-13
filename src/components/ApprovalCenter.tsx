@@ -6,9 +6,15 @@ import StatusBadge from './StatusBadge';
 
 interface ApprovalCenterProps {
   initialItems: ApprovalItem[];
+  canManageApprovals: boolean;
+  roleLabel?: string;
 }
 
-const ApprovalCenter: React.FC<ApprovalCenterProps> = ({ initialItems }) => {
+const ApprovalCenter: React.FC<ApprovalCenterProps> = ({
+  initialItems,
+  canManageApprovals,
+  roleLabel,
+}) => {
   const [items, setItems] = useState<ApprovalItem[]>(initialItems);
 
   const handleAction = (id: string, action: 'approve' | 'reject') => {
@@ -32,6 +38,11 @@ const ApprovalCenter: React.FC<ApprovalCenterProps> = ({ initialItems }) => {
           <p className="text-sm text-gray-500 dark:text-zinc-400">No pending approvals.</p>
         ) : (
           <div className="grid gap-4">
+            {!canManageApprovals ? (
+              <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
+                {roleLabel ?? 'Viewer'} access is read-only. Approval actions are limited to reviewer and admin roles.
+              </p>
+            ) : null}
             {pendingItems.map((item) => (
               <div
                 key={item.id}
@@ -49,12 +60,14 @@ const ApprovalCenter: React.FC<ApprovalCenterProps> = ({ initialItems }) => {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleAction(item.id, 'reject')}
+                    disabled={!canManageApprovals}
                     className="px-3 py-1 text-sm font-medium text-red-600 border border-red-200 rounded hover:bg-red-50 dark:text-red-400 dark:border-red-900/50 dark:hover:bg-red-900/20 transition-colors"
                   >
                     Reject
                   </button>
                   <button
                     onClick={() => handleAction(item.id, 'approve')}
+                    disabled={!canManageApprovals}
                     className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
                   >
                     Approve

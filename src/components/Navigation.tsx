@@ -1,9 +1,15 @@
 "use client";
 
-import React from "react";
+import Link from "next/link";
+import type { SessionUser } from "@/lib/types";
 import { useWebSockets } from "@/hooks/useWebSockets";
 
-export default function Navigation() {
+interface NavigationProps {
+  sessionUser: SessionUser | null;
+  onLogout: () => void | Promise<void>;
+}
+
+export default function Navigation({ sessionUser, onLogout }: NavigationProps) {
   const { status } = useWebSockets();
 
   return (
@@ -11,24 +17,55 @@ export default function Navigation() {
       <div className="flex items-center gap-4">
         <h1 className="text-lg font-semibold text-slate-800 dark:text-white">AgentOps CRM</h1>
         <div className="flex items-center gap-2 px-3 py-1 bg-slate-50 rounded-full dark:bg-zinc-800">
-          <div className={`w-2 h-2 rounded-full ${
-            status === "connected" ? "bg-green-500 animate-pulse" : 
-            status === "connecting" ? "bg-yellow-500" : "bg-red-500"
-          }`} />
+          <div
+            className={`w-2 h-2 rounded-full ${
+              status === "connected"
+                ? "bg-green-500 animate-pulse"
+                : status === "connecting"
+                  ? "bg-yellow-500"
+                  : "bg-red-500"
+            }`}
+          />
           <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
             {status === "connected" ? "Real-time: Active" : `System: ${status}`}
           </span>
         </div>
       </div>
-      <div className="flex items-center gap-4">
-        <button className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-white">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-          </svg>
-        </button>
-        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold">
-          SJ
+
+      <div className="flex items-center gap-3">
+        <div className="hidden sm:flex gap-4 text-sm text-slate-500 dark:text-zinc-400">
+          <Link href="/clients" className="hover:text-slate-900 dark:hover:text-white">
+            Clients
+          </Link>
+          <Link href="/projects" className="hover:text-slate-900 dark:hover:text-white">
+            Projects
+          </Link>
         </div>
+
+        {sessionUser ? (
+          <>
+            <div className="hidden sm:flex flex-col items-end">
+              <span className="text-sm font-semibold text-slate-900 dark:text-white">{sessionUser.name}</span>
+              <span className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-zinc-400">
+                {sessionUser.role}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => void onLogout()}
+              className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white"
+            >
+              Sign out
+            </button>
+          </>
+        ) : (
+          <Link
+            href="/login"
+            className="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-slate-600 transition hover:border-slate-300 hover:text-slate-900 dark:border-zinc-800 dark:text-zinc-300 dark:hover:border-zinc-700 dark:hover:text-white"
+          >
+            Sign in
+          </Link>
+        )}
       </div>
     </header>
   );
