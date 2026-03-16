@@ -13,7 +13,7 @@ export function DashboardLayout({
 
   return (
     <>
-      <div className="lg:hidden flex items-center justify-between p-4 bg-zinc-900 text-white sticky top-0 z-30">
+      <div className="lg:hidden sticky top-0 z-30 flex items-center justify-between border-b border-slate-200 bg-white p-4 text-slate-900 dark:border-zinc-800 dark:bg-zinc-900 dark:text-white">
         <span className="font-bold">AgentOps CRM</span>
         <button onClick={() => setIsSidebarOpen(true)}>
           <Menu className="w-6 h-6" />

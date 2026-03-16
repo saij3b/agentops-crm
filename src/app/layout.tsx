@@ -8,6 +8,21 @@ export const metadata: Metadata = {
   description: "Unified dashboard for autonomous agents",
 };
 
+const themeBootScript = `(() => {
+  try {
+    const storageKey = 'agentops-theme';
+    const stored = localStorage.getItem(storageKey);
+    const theme = stored === 'light' || stored === 'dark'
+      ? stored
+      : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.style.colorScheme = theme;
+  } catch {
+    document.documentElement.classList.toggle('dark', false);
+    document.documentElement.style.colorScheme = 'light';
+  }
+})();`;
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -16,8 +31,9 @@ export default async function RootLayout({
   const sessionUser = await getSessionUser();
 
   return (
-    <html lang="en">
-      <body className="antialiased">
+    <html lang="en" suppressHydrationWarning>
+      <body className="antialiased bg-background text-foreground transition-colors">
+        <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
         <Shell sessionUser={sessionUser}>{children}</Shell>
       </body>
     </html>
