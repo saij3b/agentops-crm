@@ -3,17 +3,19 @@ import { StatsCard } from "@/components/StatsCard";
 import AgentRunsTable from "@/components/AgentRunsTable";
 import ApprovalCenter from "@/components/ApprovalCenter";
 import { ActivityTimeline } from "@/components/ActivityTimeline";
+import { canManageApprovals, getSessionUser } from "@/lib/auth";
 import { approvalQueue } from "@/lib/data";
 import { getLiveIssues, getLivePullRequests } from "@/lib/github";
 import { getAgentRuns, getActivityTimeline } from "@/lib/services";
 
 export default async function Home() {
   const repo = "saij3b/agentops-crm";
-  const [runs, timeline, livePRs, liveIssues] = await Promise.all([
+  const [runs, timeline, livePRs, liveIssues, sessionUser] = await Promise.all([
     getAgentRuns(),
     getActivityTimeline(),
     getLivePullRequests(repo),
     getLiveIssues(repo),
+    getSessionUser(),
   ]);
 
   const hasLive = livePRs.length > 0 || liveIssues.length > 0;
@@ -83,7 +85,11 @@ export default async function Home() {
 
           <section>
             <h2 className="text-xl font-semibold mb-4">Pending Approvals</h2>
-            <ApprovalCenter initialItems={approvalQueue} />
+            <ApprovalCenter
+              initialItems={approvalQueue}
+              canManageApprovals={canManageApprovals(sessionUser?.role ?? null)}
+              roleLabel={sessionUser?.role}
+            />
           </section>
         </div>
 

@@ -39,6 +39,16 @@ export interface ApprovalItem {
   status: Status;
 }
 
+export type UserRole = 'admin' | 'reviewer' | 'viewer';
+
+export interface SessionUser {
+  id: string;
+  name: string;
+  title: string;
+  role: UserRole;
+  description: string;
+}
+
 export type ActivityType =
   | 'issue_created'
   | 'agent_assigned'
