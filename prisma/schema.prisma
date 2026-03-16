@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -14,18 +14,25 @@ model Client {
   status    String
   priority  String
   projects  Project[]
+
+  @@index([status])
+  @@index([priority])
 }
 
 model Project {
   id        String    @id
   name      String
   clientId  String
-  client    Client    @relation(fields: [clientId], references: [id])
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
   repo      String
   status    String
   milestone String
   agentLane String
   createdAt DateTime  @default(now())
+
+  @@index([clientId])
+  @@index([status])
+  @@index([repo])
 }
 
 model AgentRun {
@@ -39,17 +46,23 @@ model AgentRun {
   duration     String
   failureCount Int      @default(0)
   linkedPR     String?
+
+  @@index([status])
+  @@index([startTime])
+  @@index([project])
 }
 
 model ActivityEvent {
-  id        String   @id
-  type      String
-  timestamp DateTime @default(now())
-  actorName String
-  targetId  String
+  id          String   @id
+  type        String
+  timestamp   DateTime @default(now())
+  actorName   String
+  targetId    String
   targetTitle String
   targetType  String
+  metadata    String?
+
   @@index([timestamp])
   @@index([type])
-  metadata    String?  // SQLite fallback to string for Json.
+  @@index([targetType, targetId])
 }
