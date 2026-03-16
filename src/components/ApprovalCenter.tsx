@@ -1,7 +1,5 @@
 "use client";
 
-'use client';
-
 import React, { useState } from 'react';
 import { ApprovalItem } from '@/lib/types';
 import StatusBadge from './StatusBadge';

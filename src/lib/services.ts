@@ -1,4 +1,4 @@
-import { prisma } from "./prisma";
+import { isDatabaseConfigured, prisma } from "./prisma";
 import * as mockData from "./data";
 import type { ActivityEvent, ActivityType, AgentRun, Client, Project, Status } from "./types";
 
@@ -10,20 +10,45 @@ function toActivityType(value: string): ActivityType {
   return value as ActivityType;
 }
 
+function parseMetadata(metadata: string | null | undefined): ActivityEvent["metadata"] {
+  if (!metadata) {
+    return undefined;
+  }
+
+  try {
+    const parsed = JSON.parse(metadata);
+    return typeof parsed === "object" && parsed !== null
+      ? (parsed as ActivityEvent["metadata"])
+      : { reason: String(parsed) };
+  } catch {
+    return { reason: metadata };
+  }
+}
+
 export async function getAgentRuns(): Promise<AgentRun[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.agentRuns;
+  }
+
   try {
     const runs = await prisma.agentRun.findMany({
       orderBy: { startTime: "desc" },
     });
-
     if (runs.length === 0) {
       return mockData.agentRuns;
     }
 
     return runs.map((run) => ({
-      ...run,
-      startTime: run.startTime.toISOString(),
+      id: run.id,
+      agent: run.agent,
+      role: run.role,
+      project: run.project,
+      task: run.task,
       status: toStatus(run.status),
+      startTime: run.startTime.toISOString(),
+      duration: run.duration,
+      failureCount: run.failureCount,
+      linkedPR: run.linkedPR || undefined,
     }));
   } catch (error) {
     console.error("DB fetch error (AgentRuns), falling back to mock:", error);
@@ -32,11 +57,14 @@ export async function getAgentRuns(): Promise<AgentRun[]> {
 }
 
 export async function getActivityTimeline(): Promise<ActivityEvent[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.activityTimeline;
+  }
+
   try {
     const events = await prisma.activityEvent.findMany({
       orderBy: { timestamp: "desc" },
     });
-
     if (events.length === 0) {
       return mockData.activityTimeline;
     }
@@ -51,6 +79,7 @@ export async function getActivityTimeline(): Promise<ActivityEvent[]> {
         title: event.targetTitle,
         type: event.targetType as ActivityEvent["target"]["type"],
       },
+      metadata: parseMetadata(event.metadata),
     }));
   } catch (error) {
     console.error("DB fetch error (Timeline), falling back to mock:", error);
@@ -59,6 +88,10 @@ export async function getActivityTimeline(): Promise<ActivityEvent[]> {
 }
 
 export async function getClients(): Promise<Client[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.clients;
+  }
+
   try {
     const clients = await prisma.client.findMany();
     if (clients.length === 0) {
@@ -66,7 +99,9 @@ export async function getClients(): Promise<Client[]> {
     }
 
     return clients.map((client) => ({
-      ...client,
+      id: client.id,
+      name: client.name,
+      company: client.company,
       status: client.status as Client["status"],
       priority: client.priority as Client["priority"],
     }));
@@ -76,6 +111,10 @@ export async function getClients(): Promise<Client[]> {
 }
 
 export async function getProjects(): Promise<Project[]> {
+  if (!isDatabaseConfigured) {
+    return mockData.projects;
+  }
+
   try {
     const projects = await prisma.project.findMany();
     if (projects.length === 0) {
@@ -83,8 +122,13 @@ export async function getProjects(): Promise<Project[]> {
     }
 
     return projects.map((project) => ({
-      ...project,
+      id: project.id,
+      name: project.name,
+      clientId: project.clientId,
+      repo: project.repo,
       status: project.status as Project["status"],
+      milestone: project.milestone,
+      agentLane: project.agentLane,
       blockers: [],
     }));
   } catch {
