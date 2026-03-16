@@ -80,4 +80,5 @@ export const navItems = [
   { name: 'Dashboard', href: '/', icon: 'LayoutDashboard' },
   { name: 'Clients', href: '/clients', icon: 'Users' },
   { name: 'Projects', href: '/projects', icon: 'FolderKanban' },
+  { name: 'Orchestration', href: '/orchestration', icon: 'Radio' },
 ];

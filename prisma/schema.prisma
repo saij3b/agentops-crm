@@ -1,0 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Client {
+  id        String    @id
+  name      String
+  company   String
+  status    String    // 'active' | 'inactive' | 'lead'
+  priority  String    // 'low' | 'medium' | 'high'
+  projects  Project[]
+}
+
+model Project {
+  id        String    @id
+  name      String
+  clientId  String
+  client    Client    @relation(fields: [clientId], references: [id])
+  repo      String
+  status    String    // 'planning' | 'in-progress' | 'completed' | 'on-hold'
+  milestone String
+  agentLane String
+  createdAt DateTime  @default(now())
+}
+
+model AgentRun {
+  id           String   @id
+  agent        String
+  role         String
+  project      String
+  task         String
+  status       String
+  startTime    DateTime @default(now())
+  duration     String
+  failureCount Int      @default(0)
+  linkedPR     String?
+}
+
+model ActivityEvent {
+  id        String   @id
+  type      String
+  timestamp DateTime @default(now())
+  actorName String
+  targetId  String
+  targetTitle String
+  targetType  String
+}
