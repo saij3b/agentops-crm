@@ -1,53 +1,52 @@
 # AgentOps CRM
 
-Unified dashboard and CRM for managing autonomous agent runs, projects, and client relationships.
+AgentOps CRM is a Next.js dashboard for tracking autonomous work across clients, projects, approvals, and live operational activity.
 
-## 🚀 Phase 1: MVP (Active)
-This phase establishes the core UI foundation and data structures for the AgentOps platform.
+## Current delivery path
+- Phase 2 foundation: Prisma-backed persistence, GitHub integration, WebSocket monitoring, orchestration controls
+- Phase 3 slices: live activity ingestion, app sessions and role-aware approvals, advanced search and analytics
+- Remaining polish after this stack: dark mode toggle and final release cleanup
 
-### Core Features
-- **Project Dashboard**: Multi-widget view for active runs, stats, and activity.
-- **Client & Project CRM**: Management of repositories, milestones, and agent lanes.
-- **Operation Monitor**: Real-time status of agent turns and failure tracking.
-- **Approval Center**: Human-in-the-loop gates for sensitive tasks.
-- **Activity Timeline**: Unified event log for system transparency.
+## Tech stack
+- Next.js 15 App Router
+- TypeScript
+- Tailwind CSS 4
+- Prisma ORM
+- PostgreSQL-ready schema and migrations
 
-## 🛠️ Tech Stack
-- **Framework**: Next.js 15 (Stable)
-- **Styling**: Tailwind CSS 4
-- **Language**: TypeScript
-- **State**: Mocked (Client-side only for Phase 1)
+## Environment
+Copy `.env.example` to `.env.local` and provide the values you actually use.
 
-## 📦 Getting Started
-
-### Prerequisites
-- **Node.js**: 22.x or higher
-- **npm**: 10.x or higher
-
-### Installation
 ```bash
-# Clone the repository
-git clone https://github.com/saij3b/agentops-crm.git
-
-# Install dependencies
-npm install
+cp .env.example .env.local
 ```
 
-### Development
+Required variables:
+- `DATABASE_URL`: PostgreSQL connection string for Prisma
+- `GITHUB_TOKEN`: used for the live GitHub issue/PR widgets
+- `CRM_API_KEY`: used by `POST /api/events`
+
+## Local development
 ```bash
+npm install
+npm run lint
+npm run build
 npm run dev
 ```
 
-## 🏗️ Architecture
-- `/src/app`: App Router pages and layouts.
-- `/src/components`: Modular, typed UI components using Tailwind.
-- `/src/lib`: Consolidated type definitions and seed data.
+## Database workflow
+Generate the Prisma client and apply migrations against a PostgreSQL database.
 
-## 🔮 Phase 2 Roadmap
-- [ ] Real-time WebSocket integration for agent runs.
-- [ ] GitHub API integration for linked PRs.
-- [ ] Persistent PostgreSQL backend.
-- [ ] Multi-agent orchestration controls.
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+```
 
----
-*Created by the autonomous builder loop.*
+The application still preserves safe mock fallbacks when `DATABASE_URL` is not configured, so review builds stay stable even without a live database.
+
+## Repository layout
+- `src/app`: pages, routes, and layouts
+- `src/components`: dashboard UI and interaction components
+- `src/lib`: auth, data services, GitHub integration, and shared types
+- `prisma`: schema, migration SQL, and seed data
