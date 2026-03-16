@@ -1,6 +1,5 @@
 import { Octokit } from "octokit";
 
-// Server-only runtime check
 if (typeof window !== "undefined") {
   throw new Error("GitHub API client must only be used on the server.");
 }
@@ -10,19 +9,20 @@ const octokit = new Octokit({
 });
 
 function parseRepo(repo: string) {
-  try {
-    const clean = repo.replace("https://github.com/", "").replace(".git", "");
-    const parts = clean.split("/");
-    if (parts.length < 2) return null;
-    return { owner: parts[parts.length - 2], name: parts[parts.length - 1] };
-  } catch (e) {
+  const clean = repo.replace("https://github.com/", "").replace(".git", "");
+  const parts = clean.split("/");
+  if (parts.length < 2) {
     return null;
   }
+
+  return { owner: parts[parts.length - 2], name: parts[parts.length - 1] };
 }
 
 export async function getLivePullRequests(repoString: string) {
   const repoInfo = parseRepo(repoString);
-  if (!repoInfo) return [];
+  if (!repoInfo) {
+    return [];
+  }
 
   try {
     const { data: pulls } = await octokit.rest.pulls.list({
@@ -43,7 +43,7 @@ export async function getLivePullRequests(repoString: string) {
       updatedAt: pr.updated_at,
       url: pr.html_url,
       isDraft: pr.draft,
-      source: "live" as const
+      source: "live" as const,
     }));
   } catch (error) {
     console.error(`[github-api] Error fetching PRs for ${repoString}:`, error);
@@ -53,7 +53,9 @@ export async function getLivePullRequests(repoString: string) {
 
 export async function getLiveIssues(repoString: string) {
   const repoInfo = parseRepo(repoString);
-  if (!repoInfo) return [];
+  if (!repoInfo) {
+    return [];
+  }
 
   try {
     const { data: issues } = await octokit.rest.issues.listForRepo({
@@ -65,15 +67,15 @@ export async function getLiveIssues(repoString: string) {
       per_page: 10,
     });
 
-    return issues.filter(i => !i.pull_request).map((issue) => ({
+    return issues.filter((issue) => !issue.pull_request).map((issue) => ({
       id: issue.id.toString(),
       number: issue.number,
       title: issue.title,
       state: issue.state,
       user: issue.user?.login,
       updatedAt: issue.updated_at,
-      labels: issue.labels.map(L => typeof L === 'string' ? L : L.name),
-      source: "live" as const
+      labels: issue.labels.map((label) => (typeof label === "string" ? label : label.name)),
+      source: "live" as const,
     }));
   } catch (error) {
     console.error(`[github-api] Error fetching issues for ${repoString}:`, error);

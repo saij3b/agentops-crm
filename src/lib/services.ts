@@ -1,20 +1,32 @@
-import { prisma } from './prisma';
-import * as mockData from './data';
-import { AgentRun, ActivityEvent, Client, Project } from './types';
+import { prisma } from "./prisma";
+import * as mockData from "./data";
+import type { ActivityEvent, ActivityType, AgentRun, Client, Project, Status } from "./types";
+
+function toStatus(value: string): Status {
+  return value as Status;
+}
+
+function toActivityType(value: string): ActivityType {
+  return value as ActivityType;
+}
 
 export async function getAgentRuns(): Promise<AgentRun[]> {
   try {
     const runs = await prisma.agentRun.findMany({
-      orderBy: { startTime: 'desc' }
+      orderBy: { startTime: "desc" },
     });
-    if (runs.length === 0) return mockData.agentRuns;
-    return runs.map(r => ({
-      ...r,
-      startTime: r.startTime.toISOString(),
-      status: r.status as any
+
+    if (runs.length === 0) {
+      return mockData.agentRuns;
+    }
+
+    return runs.map((run) => ({
+      ...run,
+      startTime: run.startTime.toISOString(),
+      status: toStatus(run.status),
     }));
-  } catch (e) {
-    console.error('DB fetch error (AgentRuns), falling back to mock:', e);
+  } catch (error) {
+    console.error("DB fetch error (AgentRuns), falling back to mock:", error);
     return mockData.agentRuns;
   }
 }
@@ -22,18 +34,26 @@ export async function getAgentRuns(): Promise<AgentRun[]> {
 export async function getActivityTimeline(): Promise<ActivityEvent[]> {
   try {
     const events = await prisma.activityEvent.findMany({
-      orderBy: { timestamp: 'desc' }
+      orderBy: { timestamp: "desc" },
     });
-    if (events.length === 0) return mockData.activityTimeline;
-    return events.map(e => ({
-      id: e.id,
-      type: e.type as any,
-      timestamp: e.timestamp.toISOString(),
-      actor: { name: e.actorName },
-      target: { id: e.targetId, title: e.targetTitle, type: e.targetType as any }
+
+    if (events.length === 0) {
+      return mockData.activityTimeline;
+    }
+
+    return events.map((event) => ({
+      id: event.id,
+      type: toActivityType(event.type),
+      timestamp: event.timestamp.toISOString(),
+      actor: { name: event.actorName },
+      target: {
+        id: event.targetId,
+        title: event.targetTitle,
+        type: event.targetType as ActivityEvent["target"]["type"],
+      },
     }));
-  } catch (e) {
-    console.error('DB fetch error (Timeline), falling back to mock:', e);
+  } catch (error) {
+    console.error("DB fetch error (Timeline), falling back to mock:", error);
     return mockData.activityTimeline;
   }
 }
@@ -41,13 +61,16 @@ export async function getActivityTimeline(): Promise<ActivityEvent[]> {
 export async function getClients(): Promise<Client[]> {
   try {
     const clients = await prisma.client.findMany();
-    if (clients.length === 0) return mockData.clients;
-    return clients.map(c => ({
-      ...c,
-      status: c.status as any,
-      priority: c.priority as any
+    if (clients.length === 0) {
+      return mockData.clients;
+    }
+
+    return clients.map((client) => ({
+      ...client,
+      status: client.status as Client["status"],
+      priority: client.priority as Client["priority"],
     }));
-  } catch (e) {
+  } catch {
     return mockData.clients;
   }
 }
@@ -55,13 +78,16 @@ export async function getClients(): Promise<Client[]> {
 export async function getProjects(): Promise<Project[]> {
   try {
     const projects = await prisma.project.findMany();
-    if (projects.length === 0) return mockData.projects;
-    return projects.map(p => ({
-      ...p,
-      status: p.status as any,
-      blockers: [] // Flattened for now
+    if (projects.length === 0) {
+      return mockData.projects;
+    }
+
+    return projects.map((project) => ({
+      ...project,
+      status: project.status as Project["status"],
+      blockers: [],
     }));
-  } catch (e) {
+  } catch {
     return mockData.projects;
   }
 }

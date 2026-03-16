@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
-import { AgentRun } from '@/lib/types';
-import StatusBadge from './StatusBadge';
+import React, { useMemo, useState } from "react";
+import type { AgentRun } from "@/lib/types";
+import StatusBadge from "./StatusBadge";
 import { useWebSockets } from "@/hooks/useWebSockets";
 
 interface AgentRunsTableProps {
@@ -10,34 +10,35 @@ interface AgentRunsTableProps {
 }
 
 const AgentRunsTable: React.FC<AgentRunsTableProps> = ({ runs }) => {
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const { lastMessage } = useWebSockets();
 
-  const liveTurn = useMemo(() => {
-    if (lastMessage?.type === 'AGENT_TURN') {
+  const liveTurn = useMemo<AgentRun | null>(() => {
+    if (lastMessage && typeof lastMessage === "object" && lastMessage.type === "AGENT_TURN") {
       return {
-        id: 'live-turn',
+        id: "live-turn",
         agent: lastMessage.agent,
         role: "Autonomous Agent",
         project: "AgentOps CRM",
-        task: lastMessage.task || `Reviewing ${lastMessage.pr}`,
+        task: lastMessage.task || `Reviewing ${lastMessage.pr ?? "active work"}`,
         status: lastMessage.status,
         startTime: lastMessage.timestamp,
         duration: "In Progress",
         failureCount: 0,
-        linkedPR: lastMessage.pr
+        linkedPR: lastMessage.pr,
       };
     }
+
     return null;
   }, [lastMessage]);
 
   const filteredRuns = runs.filter(
     (run) =>
       run.agent.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      run.task.toLowerCase().includes(searchTerm.toLowerCase())
+      run.task.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const displayRuns = liveTurn ? [liveTurn as any, ...filteredRuns] : filteredRuns;
+  const displayRuns = liveTurn ? [liveTurn, ...filteredRuns] : filteredRuns;
 
   return (
     <div className="flex flex-col gap-4">
@@ -67,7 +68,7 @@ const AgentRunsTable: React.FC<AgentRunsTableProps> = ({ runs }) => {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200 dark:bg-black dark:divide-zinc-800">
             {displayRuns.map((run) => (
-              <tr key={run.id} className={`${run.id === 'live-turn' ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''} hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors`}>
+              <tr key={run.id} className={`${run.id === "live-turn" ? "bg-blue-50/50 dark:bg-blue-900/10" : ""} hover:bg-gray-50 dark:hover:bg-zinc-900 transition-colors`}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-zinc-100">{run.agent}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-zinc-400">{run.project}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-zinc-400">{run.task}</td>
@@ -75,7 +76,7 @@ const AgentRunsTable: React.FC<AgentRunsTableProps> = ({ runs }) => {
                   <StatusBadge status={run.status} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-zinc-400">
-                  {run.id === 'live-turn' ? 'LIVE' : new Date(run.startTime).toLocaleTimeString()}
+                  {run.id === "live-turn" ? "LIVE" : new Date(run.startTime).toLocaleTimeString()}
                 </td>
               </tr>
             ))}
