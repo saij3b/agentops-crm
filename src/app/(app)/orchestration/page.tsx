@@ -16,6 +16,14 @@ interface LaneData {
   health: number;
 }
 
+function createActivityId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+
+  return `evt-${globalThis.performance?.now?.() ?? 0}`;
+}
+
 export default function OrchestrationPage() {
   const [lanes, setLanes] = useState<LaneData[]>([
     { id: "lane-1", name: "OpenClaw", role: "Orchestrator", status: "active", lastActivity: "Heartbeat check passed", health: 100 },
@@ -44,7 +52,7 @@ export default function OrchestrationPage() {
     if (!lane) return;
 
     const newActivity: ActivityEvent = {
-      id: crypto.randomUUID ? crypto.randomUUID() : `evt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id: createActivityId(),
       type: "lane_action",
       timestamp: new Date().toISOString(),
       actor: { name: "Admin" },

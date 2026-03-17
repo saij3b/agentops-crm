@@ -37,7 +37,6 @@ export function useWebSockets() {
 
   useEffect(() => {
     if (!websocketUrl) {
-      setStatus("disconnected");
       return;
     }
 
