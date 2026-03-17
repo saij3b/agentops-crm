@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ActivityEvent, ActivityType } from '@/lib/types';
+import { formatClockTime } from '@/lib/format';
 
 const getEventDescription = (event: ActivityEvent) => {
   switch (event.type) {
@@ -74,7 +75,7 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({ events }) =>
                   </div>
                   <div className="whitespace-nowrap text-right text-sm text-gray-500">
                     <time dateTime={event.timestamp}>
-                      {new Date(event.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {formatClockTime(event.timestamp)}
                     </time>
                   </div>
                 </div>

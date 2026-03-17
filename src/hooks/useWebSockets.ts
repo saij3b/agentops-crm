@@ -15,6 +15,7 @@ interface AgentTurnMessage {
 }
 
 type WebSocketMessage = AgentTurnMessage | { type: string; [key: string]: unknown } | string | null;
+const websocketUrl = process.env.NEXT_PUBLIC_WS_URL;
 
 function isAgentTurnMessage(value: unknown): value is AgentTurnMessage {
   if (!value || typeof value !== "object") {
@@ -31,13 +32,19 @@ function isAgentTurnMessage(value: unknown): value is AgentTurnMessage {
 }
 
 export function useWebSockets() {
-  const [status, setStatus] = useState<WebSocketStatus>("connecting");
+  const [status, setStatus] = useState<WebSocketStatus>(websocketUrl ? "connecting" : "disconnected");
   const [lastMessage, setLastMessage] = useState<WebSocketMessage>(null);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:3001");
+    if (!websocketUrl) {
+      setStatus("disconnected");
+      return;
+    }
+
+    const socket = new WebSocket(websocketUrl);
 
     socket.onopen = () => setStatus("connected");
+    socket.onerror = () => setStatus("disconnected");
     socket.onclose = () => setStatus("disconnected");
     socket.onmessage = (event) => {
       try {
