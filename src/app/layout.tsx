@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Shell from "@/components/Shell";
-import { getSessionUser } from "@/lib/auth";
 
 export const metadata: Metadata = {
   title: "AgentOps CRM",
@@ -28,13 +26,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const sessionUser = await getSessionUser();
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased bg-background text-foreground transition-colors">
         <script dangerouslySetInnerHTML={{ __html: themeBootScript }} />
-        <Shell sessionUser={sessionUser}>{children}</Shell>
+        {children}
       </body>
     </html>
   );

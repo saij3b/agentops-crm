@@ -14,9 +14,12 @@ const eslintConfig = [
   {
     ignores: [
       ".next/**",
+      ".next_corrupt_*/**",
+      ".playwright-cli*/**",
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "*.bak-*",
     ],
   },
 ];
