@@ -6,10 +6,12 @@ import { ActivityTimeline } from "@/components/ActivityTimeline";
 import { canManageApprovals, getSessionUser } from "@/lib/auth";
 import { approvalQueue } from "@/lib/data";
 import { getLiveIssues, getLivePullRequests } from "@/lib/github";
+import { getDatabaseStatus } from "@/lib/runtime";
 import { getAgentRuns, getActivityTimeline } from "@/lib/services";
 
 export default async function Home() {
   const repo = "saij3b/agentops-crm";
+  const databaseStatus = getDatabaseStatus();
   const [runs, timeline, livePRs, liveIssues, sessionUser] = await Promise.all([
     getAgentRuns(),
     getActivityTimeline(),
@@ -39,8 +41,10 @@ export default async function Home() {
     <DashboardLayout>
       <div className="flex items-center gap-3 mb-8">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Dashboard</h1>
-        <span className="px-2 py-0.5 bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-[10px] font-bold uppercase rounded-md tracking-widest border border-green-200 dark:border-green-800">
-          PostgreSQL Ready
+        <span
+          className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-md tracking-widest border border-transparent ${databaseStatus.className}`}
+        >
+          {databaseStatus.label}
         </span>
       </div>
 

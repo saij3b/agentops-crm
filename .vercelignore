@@ -1,0 +1,10 @@
+.git
+.next
+.next_corrupt_*
+.playwright-cli
+.playwright-cli_*
+node_modules
+npm-debug.log*
+playwright-report
+test-results
+coverage

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { SessionUser } from "@/lib/types";
 import { useWebSockets } from "@/hooks/useWebSockets";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 interface NavigationProps {
   sessionUser: SessionUser | null;
@@ -33,6 +34,7 @@ export default function Navigation({ sessionUser, onLogout }: NavigationProps) {
       </div>
 
       <div className="flex items-center gap-3">
+        <ThemeToggle />
         <div className="hidden sm:flex gap-4 text-sm text-slate-500 dark:text-zinc-400">
           <Link href="/clients" className="hover:text-slate-900 dark:hover:text-white">
             Clients

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { projects, clients } from '@/lib/data';
 import { getLivePullRequests, getLiveIssues } from '@/lib/github';
+import { toGitHubRepoUrl } from '@/lib/runtime';
 import StatusBadge from '@/components/StatusBadge';
 
 interface PageProps {
@@ -105,7 +106,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
                 <div className="py-4 px-6">
                   <dt className="text-sm font-medium text-gray-500 dark:text-zinc-400">Repository</dt>
                   <dd className="mt-1 text-sm text-blue-600 dark:text-blue-400 truncate">
-                    <a href={project.repo} target="_blank" rel="noopener noreferrer">{project.repo}</a>
+                    <a href={toGitHubRepoUrl(project.repo)} target="_blank" rel="noopener noreferrer">{project.repo}</a>
                   </dd>
                 </div>
               </dl>

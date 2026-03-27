@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import type { AgentRun } from "@/lib/types";
 import StatusBadge from "./StatusBadge";
 import { useWebSockets } from "@/hooks/useWebSockets";
+import { formatClockTime } from "@/lib/format";
 
 interface AgentRunsTableProps {
   runs: AgentRun[];
@@ -76,7 +77,7 @@ const AgentRunsTable: React.FC<AgentRunsTableProps> = ({ runs }) => {
                   <StatusBadge status={run.status} />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-zinc-400">
-                  {run.id === "live-turn" ? "LIVE" : new Date(run.startTime).toLocaleTimeString()}
+                  {run.id === "live-turn" ? "LIVE" : formatClockTime(run.startTime)}
                 </td>
               </tr>
             ))}

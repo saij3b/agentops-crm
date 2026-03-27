@@ -2,17 +2,19 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { getProjects } from "@/lib/services";
 import StatusBadge from "@/components/StatusBadge";
 import Link from "next/link";
+import { getDatabaseStatus } from "@/lib/runtime";
 
 export default async function ProjectsPage() {
   const projects = await getProjects();
+  const databaseStatus = getDatabaseStatus();
 
   return (
     <DashboardLayout>
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Projects</h1>
-          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-[10px] font-bold uppercase rounded-md tracking-widest">
-            DB Backed
+          <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-md tracking-widest ${databaseStatus.className}`}>
+            {databaseStatus.label}
           </span>
         </div>
 
